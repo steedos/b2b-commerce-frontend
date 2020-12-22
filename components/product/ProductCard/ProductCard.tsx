@@ -5,44 +5,35 @@ import type { FC } from 'react'
 import s from './ProductCard.module.css'
 import WishlistButton from '@components/wishlist/WishlistButton'
 
-import usePrice from '@bigcommerce/storefront-data-hooks/use-price'
-import type { ProductNode } from '@bigcommerce/storefront-data-hooks/api/operations/get-all-products'
-
 interface Props {
   className?: string
-  product: ProductNode
   variant?: 'slim' | 'simple'
-  imgWidth: number | string
-  imgHeight: number | string
-  imgLayout?: 'fixed' | 'intrinsic' | 'responsive' | undefined
-  imgPriority?: boolean
-  imgLoading?: 'eager' | 'lazy'
-  imgSizes?: string
+  product: Product
+  handleWishlistChange: () => void
+  imageOpts: NextImage
 }
 
 const ProductCard: FC<Props> = ({
   className,
-  product: p,
   variant,
-  imgWidth,
-  imgHeight,
-  imgPriority,
-  imgLoading,
-  imgSizes,
-  imgLayout = 'responsive',
+  product: p,
+  handleWishlistChange,
+  imageOpts = {},
 }) => {
-  const src = p.images.edges?.[0]?.node?.urlOriginal!
-  const { price } = usePrice({
-    amount: p.prices?.price?.value,
-    baseAmount: p.prices?.retailPrice?.value,
-    currencyCode: p.prices?.price?.currencyCode!,
-  })
+  // Selecting the first image
+  const image = p.images[0]
+
+  const rootClassName = cn(
+    s.root,
+    { [s.simple]: variant === 'simple' },
+    className
+  )
+
+  const finalImageOpts = { ...imageOpts }
 
   return (
-    <Link href={`/product${p.path}`}>
-      <a
-        className={cn(s.root, { [s.simple]: variant === 'simple' }, className)}
-      >
+    <Link href={`/product${p.slug}`}>
+      <a className={rootClassName}>
         {variant === 'slim' ? (
           <div className="relative overflow-hidden box-border">
             <div className="absolute inset-0 flex items-center justify-end mr-8 z-20">
@@ -52,14 +43,14 @@ const ProductCard: FC<Props> = ({
             </div>
             <Image
               quality="85"
-              width={imgWidth}
-              sizes={imgSizes}
-              height={imgHeight}
-              layout={imgLayout}
-              loading={imgLoading}
-              priority={imgPriority}
-              src={p.images[0]}
-              alt={p.images.edges?.[0]?.node.altText || 'Product Image'}
+              width={image.width}
+              sizes={image.sizes}
+              height={image.height}
+              layout={image.layout}
+              loading={image.loading}
+              priority={image.priority}
+              src={image.src}
+              alt={image.alt || 'Product Image'}
             />
           </div>
         ) : (
@@ -70,26 +61,25 @@ const ProductCard: FC<Props> = ({
                 <h3 className={s.productTitle}>
                   <span>{p.name}</span>
                 </h3>
-                <span className={s.productPrice}>{price}</span>
+                <span className={s.productPrice}>{p.price}</span>
               </div>
               <WishlistButton
                 className={s.wishlistButton}
-                productId={p.entityId}
-                variant={p.variants.edges?.[0]!}
+                onClick={handleWishlistChange}
               />
             </div>
             <div className={s.imageContainer}>
               <Image
                 quality="85"
-                src={src}
-                alt={p.name}
                 className={s.productImage}
-                width={imgWidth}
-                sizes={imgSizes}
-                height={imgHeight}
-                layout={imgLayout}
-                loading={imgLoading}
-                priority={imgPriority}
+                width={image.width}
+                sizes={image.sizes}
+                height={image.height}
+                layout={image.layout}
+                loading={image.loading}
+                priority={image.priority}
+                src={image.src}
+                alt={image.alt || 'Product Image'}
               />
             </div>
           </>

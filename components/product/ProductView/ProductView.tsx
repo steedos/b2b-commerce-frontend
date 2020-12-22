@@ -8,9 +8,11 @@ import { useUI } from '@components/ui/context'
 import { Swatch, ProductSlider } from '@components/product'
 import { Button, Container, Text } from '@components/ui'
 
+// REMOVE ALL BC
 import usePrice from '@bigcommerce/storefront-data-hooks/use-price'
 import useAddItem from '@bigcommerce/storefront-data-hooks/cart/use-add-item'
 import type { ProductNode } from '@bigcommerce/storefront-data-hooks/api/operations/get-product'
+
 import {
   getCurrentVariant,
   getProductOptions,
@@ -22,9 +24,10 @@ interface Props {
   className?: string
   children?: any
   product: ProductNode
+  handleWishlistChange: () => void
 }
 
-const ProductView: FC<Props> = ({ product }) => {
+const ProductView: FC<Props> = ({ product, handleWishlistChange }) => {
   const addItem = useAddItem()
   const { price } = usePrice({
     amount: product.prices?.price?.value,
@@ -155,8 +158,7 @@ const ProductView: FC<Props> = ({ product }) => {
 
         <WishlistButton
           className={s.wishlistButton}
-          productId={product.entityId}
-          variant={product.variants.edges?.[0]!}
+          onClick={handleWishlistChange}
         />
       </div>
     </Container>

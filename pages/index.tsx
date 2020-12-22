@@ -9,6 +9,7 @@ import { getConfig } from '@bigcommerce/storefront-data-hooks/api'
 import getAllProducts from '@bigcommerce/storefront-data-hooks/api/operations/get-all-products'
 import getSiteInfo from '@bigcommerce/storefront-data-hooks/api/operations/get-site-info'
 import getAllPages from '@bigcommerce/storefront-data-hooks/api/operations/get-all-pages'
+import usePrice from '@bigcommerce/storefront-data-hooks/use-price'
 
 import { getProducts } from '@framework/api/product'
 
@@ -48,18 +49,20 @@ export default function Home({
   return (
     <div>
       <Grid>
-        {featured.slice(0, 3).map((node, i) => (
+        {featured.slice(0, 3).map((product: Product, i) => (
           <ProductCard
-            key={node.id}
-            product={node}
-            imgWidth={i === 0 ? 1080 : 540}
-            imgHeight={i === 0 ? 1080 : 540}
-            imgPriority
-            imgLoading="eager"
+            key={product.id}
+            product={product}
+            imageOpts={{
+              width: i === 0 ? 1080 : 540,
+              height: i === 0 ? 1080 : 540,
+              priority: true,
+              loading: 'eager',
+            }}
           />
         ))}
       </Grid>
-      <Marquee variant="secondary">
+      {/* <Marquee variant="secondary">
         {bestSelling.slice(3, 6).map((node) => (
           <ProductCard
             key={node.id}
@@ -82,12 +85,12 @@ export default function Home({
         ‘Natural’."
       />
       <Grid layout="B">
-        {featured.slice(3, 6).map((node, i) => (
+        {featured.slice(3, 6).map((product: Product, i) => (
           <ProductCard
-            key={node.id}
-            product={node}
-            imgWidth={i === 1 ? 1080 : 540}
-            imgHeight={i === 1 ? 1080 : 540}
+            key={product.id}
+            product={product}
+            width={i === 1 ? 1080 : 540}
+            height={i === 1 ? 1080 : 540}
           />
         ))}
       </Grid>
@@ -107,7 +110,7 @@ export default function Home({
         categories={categories}
         brands={brands}
         newestProducts={newestProducts}
-      />
+      /> */}
     </div>
   )
 }
