@@ -126,11 +126,11 @@ async function getProduct({
     `
   const priceQuery = `
     query{
-      cc_price_list__c {
+      node:cc_price_list__c {
         __typename
         _id
         name
-        related__cc_price_list_items__c {
+        priceList:related__cc_price_list_items__c {
           _id
           name
           price_value__c
@@ -140,30 +140,30 @@ async function getProduct({
   `
   
   const product_main  = await fetchSteedosGraphqlApi(proQuery)
-  console.log('product_main--', product_main)
+  //console.log('product_main--', product_main)
 
-  // const price_list = await fetchSteedosGraphqlApi(priceQuery)
+  const price_list = await fetchSteedosGraphqlApi(priceQuery)
  
   //TODO convert
-  //const fs = require('fs')
-  //const path = require('path')
-  //const filePath = 'C:/Users/Joanna/Documents/GitHub/b2b-commerce-frontend/docs/product.json'
-  //const productJson = JSON.parse(fs.readFileSync(filePath, 'utf8').normalize('NFC'))
 
   const product_new = convertProductType(product_main)
   const product:any = product_new.site.route.node
-  //const price_all = convertPriceType(price_list)
+  const price_all = convertPriceType(price_list)
+  product.prices = price_all
+
   // 生成json文件，查看数据结构
-  //  let targetFolderName = './docs';
-  //   try{
-  //       fs.statSync(targetFolderName);
-  //   }catch(e){
-  //       //目录不存在的情况下       
-  //       if(e.code == "ENOENT"){
-  //           fs.mkdirSync(targetFolderName);
-  //       }  
-  //   }
-  //   fs.writeFileSync(path.join(targetFolderName,'producttest.json'), JSON.stringify(product));
+  const fs = require('fs')
+  const path = require('path')
+  let targetFolderName = './docs';
+  try{
+      fs.statSync(targetFolderName);
+  }catch(e){
+      //目录不存在的情况下       
+      if(e.code == "ENOENT"){
+          fs.mkdirSync(targetFolderName);
+      }  
+  }
+  fs.writeFileSync(path.join(targetFolderName,'producttest.json'), JSON.stringify(product));
 
   if (product) {
     if (locale && config.applyLocale) {
