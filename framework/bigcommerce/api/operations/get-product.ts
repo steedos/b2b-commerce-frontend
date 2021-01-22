@@ -2,6 +2,7 @@ import type { GetProductQuery, GetProductQueryVariables } from '../../schema'
 import setProductLocaleMeta from '../utils/set-product-locale-meta'
 import { productInfoFragment } from '../fragments/product'
 import { BigcommerceConfig, getConfig } from '..'
+import fetchSteedosGraphqlApi from '../utils/fetch-steedos-api'
 
 export const getProductQuery = /* GraphQL */ `
   query getProduct(
@@ -104,6 +105,12 @@ async function getProduct({
   }
   const { data } = await config.fetch<GetProductQuery>(query, { variables })
   const product = data.site?.route?.node
+
+  //调用steedos的fetch，通过graphql获取数据
+  const product2  = await fetchSteedosGraphqlApi()
+  console.log('product2---', product2.data)
+  //TODO convert
+
 
   if (product?.__typename === 'Product') {
     if (locale && config.applyLocale) {
