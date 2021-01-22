@@ -3,7 +3,7 @@ import setProductLocaleMeta from '../utils/set-product-locale-meta'
 import { productInfoFragment } from '../fragments/product'
 import { BigcommerceConfig, getConfig } from '..'
 import { fetchSteedosGraphqlApi } from '../utils/fetch-steedos-api'
-import { convertObjType, convertPriceType } from './type-convert'
+import { convertProductType, convertPriceType } from './type-convert'
 
 
 export const getProductQuery = /* GraphQL */ `
@@ -105,31 +105,21 @@ async function getProduct({
     hasLocale: !!locale,
     path: slug ? `/${slug}/` : vars.path!,
   }
-  const { data } = await config.fetch<GetProductQuery>(query, { variables })
-  const product = data.site?.route?.node
+  //const { data } = await config.fetch<GetProductQuery>(query, { variables })
+  //const product = data.site?.route?.node
 
 
   //调用steedos的fetch，通过graphql获取数据
   const proQuery = `
         query{
-            node:cc_product__c{
+          node:cc_product__c{
                 __typename
                 _id
                 name
-                short_desc__c:description
-                related__cc_product_category__c {
-                  _id
-                  name
-                }
-                related__cc_product_spec__c {
-                  _id
-                  name
-                  spec_value__c
-                }
                 related__cc_product_media__c{
                   _id
                   name
-                  url__c
+                  urlOriginal:url__c
                 }
             }          
         }
@@ -150,18 +140,32 @@ async function getProduct({
   `
   
   const product_main  = await fetchSteedosGraphqlApi(proQuery)
-    console.log('product_main--', product_main)
+  console.log('product_main--', product_main)
 
-  const price_list = await fetchSteedosGraphqlApi(priceQuery)
+  // const price_list = await fetchSteedosGraphqlApi(priceQuery)
  
   //TODO convert
-  const product_all = convertObjType(product_main)
-  const price_all = convertPriceType(price_list)
-  
+  //const fs = require('fs')
+  //const path = require('path')
+  //const filePath = 'C:/Users/Joanna/Documents/GitHub/b2b-commerce-frontend/docs/product.json'
+  //const productJson = JSON.parse(fs.readFileSync(filePath, 'utf8').normalize('NFC'))
 
-  console.log('product_new---', product_all)
-  console.log('product_price---', price_all)
-  if (product?.__typename === 'Product') {
+  const product_new = convertProductType(product_main)
+  const product:any = product_new.site.route.node
+  //const price_all = convertPriceType(price_list)
+  // 生成json文件，查看数据结构
+  //  let targetFolderName = './docs';
+  //   try{
+  //       fs.statSync(targetFolderName);
+  //   }catch(e){
+  //       //目录不存在的情况下       
+  //       if(e.code == "ENOENT"){
+  //           fs.mkdirSync(targetFolderName);
+  //       }  
+  //   }
+  //   fs.writeFileSync(path.join(targetFolderName,'producttest.json'), JSON.stringify(product));
+
+  if (product) {
     if (locale && config.applyLocale) {
       setProductLocaleMeta(product)
     }
