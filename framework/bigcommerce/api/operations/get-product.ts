@@ -113,13 +113,23 @@ async function getProduct({
   const proQuery = `
         query{
           node:cc_product__c{
-                __typename
                 _id
                 name
                 related__cc_product_media__c{
                   _id
                   name
                   urlOriginal:url__c
+                }
+                related__cc_product_spec__c {
+                  __typename
+                  name
+                  displayName:spec_value__c
+                  spec__c {
+                    _id
+                    name
+                    label:spec_group__c__label
+                    isDefault:is_visible_in_cataiog__c
+                  } 
                 }
             }          
         }
