@@ -7,6 +7,8 @@ import filterEdges from '../utils/filter-edges'
 import setProductLocaleMeta from '../utils/set-product-locale-meta'
 import { productConnectionFragment } from '../fragments/product'
 import { BigcommerceConfig, getConfig } from '..'
+import { fetchSteedosGraphqlApi } from '../utils/fetch-steedos-api'
+import { converAllProdcutsType } from './type-convert'
 
 export const getAllProductsQuery = /* GraphQL */ `
   query getAllProducts(
@@ -113,12 +115,42 @@ async function getAllProducts({
 
   // RecursivePartial forces the method to check for every prop in the data, which is
   // required in case there's a custom `query`
-  const { data } = await config.fetch<RecursivePartial<GetAllProductsQuery>>(
-    query,
-    { variables }
-  )
-  const edges = data.site?.[field]?.edges
-  const products = filterEdges(edges as RecursiveRequired<typeof edges>)
+  // const { data } = await config.fetch<RecursivePartial<GetAllProductsQuery>>(
+  //   query,
+  //   { variables }
+  // )
+  // const edges = data.site?.[field]?.edges
+
+   //调用steedos的fetch，通过graphql获取数据
+   const proQuery = `
+   query{
+          node:cc_product__c{
+            _id
+            name
+            related__cc_product_media__c{
+              _id
+              name
+              urlOriginal:url__c
+            }
+            related__cc_product_spec__c {
+              __typename
+              name
+              displayName:spec_value__c
+              spec__c {
+                _id
+                name
+                label:spec_group__c__label
+                isDefault:is_visible_in_cataiog__c
+              } 
+            }
+        }          
+    }
+  `
+  const products_main  = await fetchSteedosGraphqlApi(proQuery)
+  const products = converAllProdcutsType(products_main)
+  
+  
+  //const products = filterEdges(edges as RecursiveRequired<typeof edges>)
 
   if (locale && config.applyLocale) {
     products.forEach((product: RecursivePartial<ProductEdge>) => {

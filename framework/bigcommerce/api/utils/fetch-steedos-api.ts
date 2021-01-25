@@ -22,7 +22,7 @@ export async function fetchSteedosGraphqlApi(query:any){
         body: JSON.stringify(bodyJson),
     })
     
-    console.log('res---fetch--', res);
+    console.log('res---fetch--', res.data.node);
     // const data =await res.json()
     // console.log('res.json()----', data)
     return res
