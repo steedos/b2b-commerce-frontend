@@ -3,6 +3,8 @@ import type { RecursivePartial, RecursiveRequired } from '../utils/types'
 import filterEdges from '../utils/filter-edges'
 import { BigcommerceConfig, getConfig } from '..'
 import { categoryTreeItemFragment } from '../fragments/category-tree'
+import { fetchSteedosGraphqlApi } from '../utils/fetch-steedos-api'
+import { convertBrandTreeType, convertCategoryTreeType } from './type-convert'
 
 // Get 3 levels of categories
 export const getSiteInfoQuery = /* GraphQL */ `
@@ -96,9 +98,24 @@ async function getSiteInfo({
   )
   const categories = data.site?.categoryTree
   const brands = data.site?.brands?.edges
+  // console.log('categories----', categories)
+  // console.log('brands----', brands)
+  //调用steedos的fetch，通过graphql获取数据
+  const proQuery = `
+    query{
+      cc_category__c {
+        _id
+        name
+      }
+    }
+  `
+  const siteInfos  = await fetchSteedosGraphqlApi(proQuery)
+  const categoryTree = convertCategoryTreeType(siteInfos.data)
+  console.log('categoryTree---', categoryTree)
+  //const brandTree = convertBrandTreeType(siteInfos.data)
 
   return {
-    categories: (categories as RecursiveRequired<typeof categories>) ?? [],
+    categories: (categoryTree as RecursiveRequired<typeof categories>) ?? [],
     brands: filterEdges(brands as RecursiveRequired<typeof brands>),
   }
 }

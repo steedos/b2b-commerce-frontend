@@ -52,12 +52,11 @@ export function extendHook(
       customFetcher,
       { revalidateOnFocus: false, ...swrOptions }
     )
-
+    console.log('SearchProductsData-response---', response)
     return response
   }
 
   useSearch.extend = extendHook
-
   return useSearch
 }
 

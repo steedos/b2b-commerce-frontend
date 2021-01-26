@@ -34,7 +34,7 @@ async function getAllPages({
     RecursivePartial<{ data: Page[] }>
   >('/v3/content/pages')
   const pages = (data as RecursiveRequired<typeof data>) ?? []
-
+  //console.log('storeApiFetch-----', pages)
   return {
     pages: preview ? pages : pages.filter((p) => p.is_visible),
   }

@@ -30,6 +30,7 @@ export default async function fetchStoreApi<T>(
   const isJSON = contentType?.includes('application/json')
 
   if (!res.ok) {
+    
     const data = isJSON ? await res.json() : await getTextOrNull(res)
     const headers = getRawHeaders(res)
     const msg = `Big Commerce API error (${
@@ -47,7 +48,8 @@ export default async function fetchStoreApi<T>(
       res
     )
   }
-
+  console.log('store--fetch--url-', config.storeApiUrl + endpoint)
+  //console.log('store--fetch--data-', res)
   // If something was removed, the response will be empty
   return res.status === 204 ? null : await res.json()
 }
@@ -58,12 +60,13 @@ function getRawHeaders(res: Response) {
   res.headers.forEach((value, key) => {
     headers[key] = value
   })
-
+  console.log('headers---', headers)
   return headers
 }
 
 function getTextOrNull(res: Response) {
   try {
+    console.log('res.text()-store--', res.text())
     return res.text()
   } catch (err) {
     return null

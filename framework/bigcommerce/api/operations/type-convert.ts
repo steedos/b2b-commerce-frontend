@@ -1,28 +1,5 @@
 //TODO  convert Product json
 
-export function convertProductType(dataJson:any){
-
-    let productObj = {
-        site:{
-            route:{
-                node:{
-
-                }
-            }
-        }
-    } 
-
-    if(dataJson.data.node){
-        
-        const productJson = dataJson.data.node[0]
-
-        const product = convertProduct(productJson)
-
-        productObj.site.route.node = product
-    }
-    return productObj
-}
-
 function convertProduct(productJson:any){
     let product = productJson
     product.brand = {
@@ -153,6 +130,31 @@ function convertProductLocaleMetaType(localeMetaJson:any){
     //TODO 本地化
 }
 
+
+//TODO 所查产品的id
+export function convertProductType(dataJson:any){
+
+    let productObj = {
+        site:{
+            route:{
+                node:{
+
+                }
+            }
+        }
+    } 
+
+    if(dataJson.data.node){
+        
+        const productJson = dataJson.data.node[0]
+
+        const product = convertProduct(productJson)
+
+        productObj.site.route.node = product
+    }
+    return productObj
+}
+
 //TODO 传入价格所属产品信息
 export function convertPriceType(objJson:any){
 
@@ -172,7 +174,7 @@ export function convertPriceType(objJson:any){
     return priceObj
 }
 
-export function converAllProdcutsType(productsJson:any){
+export function convertAllProdcutsType(productsJson:any){
 
     let allProducts = {
         site:{
@@ -200,3 +202,22 @@ export function converAllProdcutsType(productsJson:any){
     }
     return productList
 }
+
+
+export function convertCategoryTreeType(categorysJson:any){
+    const categoryTrees = categorysJson.cc_category__c
+    const paths = ['/shop-all/', '/bath/', '/garden/', '/kitchen/', '/publications/']
+    for(let i = 0; i < categoryTrees.length; i++){
+        categoryTrees[i].path = paths[i]
+    }
+    return categoryTrees
+} 
+
+export function convertBrandTreeType(brandsJson:any){
+    const brandTrees = brandsJson.cc_category__c
+    const paths = ['/shop-all/', '/bath/', '/garden/', '/kitchen/', '/publications/']
+    for(let i = 0; i < brandTrees.length; i++){
+        brandTrees[i].path = paths[i]
+    }
+    return brandTrees
+} 

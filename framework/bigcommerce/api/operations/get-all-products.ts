@@ -8,7 +8,7 @@ import setProductLocaleMeta from '../utils/set-product-locale-meta'
 import { productConnectionFragment } from '../fragments/product'
 import { BigcommerceConfig, getConfig } from '..'
 import { fetchSteedosGraphqlApi } from '../utils/fetch-steedos-api'
-import { converAllProdcutsType } from './type-convert'
+import { convertAllProdcutsType } from './type-convert'
 
 export const getAllProductsQuery = /* GraphQL */ `
   query getAllProducts(
@@ -113,6 +113,8 @@ async function getAllProducts({
 
   variables[field] = true
 
+  console.log("getAllProducts---variables---", variables)
+
   // RecursivePartial forces the method to check for every prop in the data, which is
   // required in case there's a custom `query`
   // const { data } = await config.fetch<RecursivePartial<GetAllProductsQuery>>(
@@ -147,7 +149,7 @@ async function getAllProducts({
     }
   `
   const products_main  = await fetchSteedosGraphqlApi(proQuery)
-  const products = converAllProdcutsType(products_main)
+  const products = convertAllProdcutsType(products_main)
   
   
   //const products = filterEdges(edges as RecursiveRequired<typeof edges>)
