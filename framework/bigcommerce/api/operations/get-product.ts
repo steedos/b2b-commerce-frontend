@@ -107,12 +107,14 @@ async function getProduct({
   }
   //const { data } = await config.fetch<GetProductQuery>(query, { variables })
   //const product = data.site?.route?.node
-
+  //console.log('getProduct---variables--', variables)
 
   //调用steedos的fetch，通过graphql获取数据
+  const productId = variables.path.split('/')[1] || null
+  console.log('productId--', productId)
   const proQuery = `
         query{
-          node:cc_product__c{
+          node:cc_product__c(filters:"_id eq '${productId}'"){
                 _id
                 name
                 related__cc_product_media__c{

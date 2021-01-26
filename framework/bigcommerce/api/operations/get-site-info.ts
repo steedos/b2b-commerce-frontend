@@ -111,7 +111,7 @@ async function getSiteInfo({
   `
   const siteInfos  = await fetchSteedosGraphqlApi(proQuery)
   const categoryTree = convertCategoryTreeType(siteInfos.data)
-  console.log('categoryTree---', categoryTree)
+  //console.log('categoryTree---', categoryTree)
   //const brandTree = convertBrandTreeType(siteInfos.data)
 
   return {

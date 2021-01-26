@@ -5,7 +5,7 @@ function convertProduct(productJson:any){
     product.brand = {
         "entityId": 37
     }
-
+    product.path = '/' + product._id +'/'
     const imgList = product.related__cc_product_media__c
     const specList = product.related__cc_product_spec__c  
 
@@ -131,7 +131,6 @@ function convertProductLocaleMetaType(localeMetaJson:any){
 }
 
 
-//TODO 所查产品的id
 export function convertProductType(dataJson:any){
 
     let productObj = {
@@ -175,13 +174,6 @@ export function convertPriceType(objJson:any){
 }
 
 export function convertAllProdcutsType(productsJson:any){
-
-    let allProducts = {
-        site:{
-
-        }
-    }
-    // console.log('productsJson----', productsJson)
     let productList = productsJson.data.node
     if(productList){
         const cursors = ['YXJyYXljb25uZWN0aW9uOjA','YXJyYXljb25uZWN0aW9uOjE=','YXJyYXljb25uZWN0aW9uOjI=']
@@ -221,3 +213,16 @@ export function convertBrandTreeType(brandsJson:any){
     }
     return brandTrees
 } 
+
+export function convertAllProdcutsPathType(productsJson:any){
+    let productList = productsJson.data.node
+    if(productList){
+        for(let i = 0; i< productList.length; i++){
+            const path = '/' +productList[i]._id + '/'
+            productList[i].path = path
+            delete productList[i]._id
+            productList[i] = {node: productList[i]}
+        }
+    }
+    return productList
+}
