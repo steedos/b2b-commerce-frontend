@@ -163,11 +163,20 @@ export function convertPriceType(objJson:any){
         retailPrice:{}
     }
     if(objJson.data){
-        const priceList = objJson.data.node[0].priceList
+        const priceList = objJson.data.node
         //console.log(priceList)
         priceObj.price = priceList[0] || null
         priceObj.salePrice = priceList[1] || null
         priceObj.retailPrice = priceList[2] || null
+
+        // "prices": {
+        //     "price": {
+        //         "value": 60.12,
+        //         "currencyCode": "USD"
+        //     },
+        //     "salePrice": null,
+        //     "retailPrice": null
+        // },
     }
 
     return priceObj

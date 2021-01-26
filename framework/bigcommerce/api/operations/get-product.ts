@@ -150,17 +150,28 @@ async function getProduct({
       }
     }
   `
+  const priceQ = `
+    query{
+      node:cc_price_list_items__c(filters: "product__c eq '${productId}'") {
+        _id
+        price_value__c
+      }
+    }
+  `
   
   const product_main  = await fetchSteedosGraphqlApi(proQuery)
   //console.log('product_main--', product_main)
 
   const price_list = await fetchSteedosGraphqlApi(priceQuery)
+
+  const prices = await fetchSteedosGraphqlApi(priceQ)
  
   //TODO convert
 
   const product_new = convertProductType(product_main)
   const product:any = product_new.site.route.node
-  const price_all = convertPriceType(price_list)
+  const price_all = convertPriceType(prices)
+  console.log('prices---', price_all)
   product.prices = price_all
 
   // 生成json文件，查看数据结构
