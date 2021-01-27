@@ -8,7 +8,7 @@ import setProductLocaleMeta from '../utils/set-product-locale-meta'
 import { productConnectionFragment } from '../fragments/product'
 import { BigcommerceConfig, getConfig } from '..'
 import { fetchSteedosGraphqlApi } from '../utils/fetch-steedos-api'
-import { convertAllProdcutsType } from './type-convert'
+import { convertAllProdcutsType, convertPriceType } from './type-convert'
 
 export const getAllProductsQuery = /* GraphQL */ `
   query getAllProducts(
@@ -148,9 +148,34 @@ async function getAllProducts({
         }          
     }
   `
+  // let productId = ''
+  // const priceQ = `
+  //   query{
+  //     node:cc_price_list_items__c(filters: "product__c eq '${productId}'") {
+  //       _id
+  //       price_value__c
+  //     }
+  //   }
+  // `
   const products_main  = await fetchSteedosGraphqlApi(proQuery)
   const products = convertAllProdcutsType(products_main)
-  
+
+  for(let i = 0; i < products.length; i++){
+    if (products[i].node){
+      const productId = products[i].node._id
+      const priceQ = `
+        query{
+          node:cc_price_list_items__c(filters: "product__c eq '${productId}'") {
+            value:price_value__c
+          }
+        }
+      `
+      const prices = await fetchSteedosGraphqlApi(priceQ)
+      const price_all = convertPriceType(prices)
+      products[i].node.prices = price_all
+      //console.log('products[i].node.prices', products[i].node.prices)
+    }
+  }
   
   //const products = filterEdges(edges as RecursiveRequired<typeof edges>)
 
@@ -160,6 +185,19 @@ async function getAllProducts({
     })
   }
 
+   // 生成json文件，查看数据结构
+   const fs = require('fs')
+   const path = require('path')
+   let targetFolderName = './docs';
+   try{
+       fs.statSync(targetFolderName);
+   }catch(e){
+       //目录不存在的情况下       
+       if(e.code == "ENOENT"){
+           fs.mkdirSync(targetFolderName);
+       }  
+   }
+   fs.writeFileSync(path.join(targetFolderName,'products.json'), JSON.stringify(products));
   return { products }
 }
 

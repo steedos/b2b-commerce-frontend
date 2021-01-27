@@ -92,12 +92,12 @@ async function getSiteInfo({
   config = getConfig(config)
   // RecursivePartial forces the method to check for every prop in the data, which is
   // required in case there's a custom `query`
-  const { data } = await config.fetch<RecursivePartial<GetSiteInfoQuery>>(
-    query,
-    { variables }
-  )
-  const categories = data.site?.categoryTree
-  const brands = data.site?.brands?.edges
+  // const { data } = await config.fetch<RecursivePartial<GetSiteInfoQuery>>(
+  //   query,
+  //   { variables }
+  // )
+  // const categories = data.site?.categoryTree
+  // const brands = data.site?.brands?.edges
   // console.log('categories----', categories)
   // console.log('brands----', brands)
   //调用steedos的fetch，通过graphql获取数据
@@ -115,8 +115,8 @@ async function getSiteInfo({
   //const brandTree = convertBrandTreeType(siteInfos.data)
 
   return {
-    categories: (categoryTree as RecursiveRequired<typeof categories>) ?? [],
-    brands: filterEdges(brands as RecursiveRequired<typeof brands>),
+    categories: categoryTree ?? [],
+    brands: [],
   }
 }
 

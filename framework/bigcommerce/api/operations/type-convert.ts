@@ -12,8 +12,10 @@ function convertProduct(productJson:any){
     let images = convertProductImagesType(imgList)
     product.images = images
 
-    // let productOptions = convertProductOptionsType(specList)
-    // product.productOptions = productOptions
+    let productOptions = convertProductOptionsType(specList)
+    // console.log('productOptions---', productOptions.edges[0].node)
+    // console.log('productOptions-values--', productOptions.edges[0].node.values.edges)
+    product.productOptions = productOptions
     
 
     delete product.related__cc_product_media__c
@@ -24,77 +26,91 @@ function convertProduct(productJson:any){
            
         ]
     }
-    product.productOptions = {
-        "edges": [
-            {
-                "node": {
-                    "__typename": "MultipleChoiceOption",
-                    //"entityId": 128,
-                    "displayName": "size",
-                    "values": {
-                        "edges": [
-                            {
-                                "node": {
-                                    "label": "XS",
-                                }
-                            },
-                            {
-                                "node": {
-                                    "label": "S",
-                                }
-                            },
-                            {
-                                "node": {
-                                    "label": "XXX",
-                                }
-                            }
-                        ]
-                    }
-                }
-            },
-            {
-                "node": {
-                    "__typename": "MultipleChoiceOption",
-                    //"entityId": 127,
-                    "displayName": "Color",
-                    "values": {
-                        "edges": [
-                            {
-                                "node": {
-                                    "label": "优惠券",
-                                }
-                            },
-                            {
-                                "node": {
-                                    "label": "一般",
-                                }
-                            },
-                            {
-                                "node": {
-                                    "label": "测试",
-                                }
-                            }
-                        ]
-                    }
-                }
-            }
-        ]
+    // product.productOptions = {
+    //     "edges": [
+    //         {
+    //             "node": {
+    //                 "__typename": "MultipleChoiceOption",
+    //                 //"entityId": 128,
+    //                 "displayName": "size",
+    //                 "values": {
+    //                     "edges": [
+    //                         {
+    //                             "node": {
+    //                                 "label": "XS",
+    //                             }
+    //                         },
+    //                         {
+    //                             "node": {
+    //                                 "label": "S",
+    //                             }
+    //                         },
+    //                         {
+    //                             "node": {
+    //                                 "label": "XXX",
+    //                             }
+    //                         }
+    //                     ]
+    //                 }
+    //             }
+    //         },
+    //         {
+    //             "node": {
+    //                 "__typename": "MultipleChoiceOption",
+    //                 //"entityId": 127,
+    //                 "displayName": "Color",
+    //                 "values": {
+    //                     "edges": [
+    //                         {
+    //                             "node": {
+    //                                 "label": "Black",
+    //                                 "isDefault": false,
+    //                                 "hexColors": [
+    //                                     "#FFFFFF"
+    //                                 ]
+    //                             }
+    //                         },
+    //                         {
+    //                             "node": {
+    //                                 "label": "White",
+    //                                 "isDefault": false,
+    //                                 "hexColors": [
+    //                                     "#000000"
+    //                                 ]
+    //                             }
+    //                         }
+    //                     ]
+    //                 }
+    //             }
+    //         }
+    //     ]
   
-    }
+    // }
 
     product.localeMeta = {
         "edges": [
            
         ]
     }
-    product.prices = {
-        "price": {
-            "value": 20,
-            "currencyCode": "USD"
-        },
-        "salePrice": null,
-        "retailPrice": null
-    }
+    // product.prices = {
+    //     "price": {
+    //         "value": 20,
+    //         "currencyCode": "USD"
+    //     },
+    //     "salePrice": null,
+    //     "retailPrice": null
+    // }
+    // "prices": {
+    //     "price": {
+    //         "_id": "CsvK2Wha2zNDiBbK2",
+    //         "value": 1000
+    //     },
+    //     "salePrice": {
+    //         "_id": "9LES9ffBJNbezwuEF",
+    //         "value": 20
+    //     },
+    //     "retailPrice": null
+    // }
     return product
 }
 
@@ -117,8 +133,10 @@ function convertProductOptionsType(optionsList:any){
         
         let options = optionsList[i].spec__c
         for(let j = 0; j < options.length; j++){
+            
             options[j] = {node:options[j]}
         }
+        optionsList[i].__typename = 'MultipleChoiceOption'
         optionsList[i].values = {edges:options}
         delete optionsList[i].spec__c
         optionsList[i] = {node:optionsList[i]}
@@ -164,19 +182,13 @@ export function convertPriceType(objJson:any){
     }
     if(objJson.data){
         const priceList = objJson.data.node
-        //console.log(priceList)
+        //console.log('priceList---', priceList)
+        if(priceList[0]) priceList[0].currencyCode = 'USD'
+        if(priceList[1]) priceList[1].currencyCode = 'USD'
+        if(priceList[2]) priceList[2].currencyCode = 'USD'
         priceObj.price = priceList[0] || null
         priceObj.salePrice = priceList[1] || null
         priceObj.retailPrice = priceList[2] || null
-
-        // "prices": {
-        //     "price": {
-        //         "value": 60.12,
-        //         "currencyCode": "USD"
-        //     },
-        //     "salePrice": null,
-        //     "retailPrice": null
-        // },
     }
 
     return priceObj
@@ -229,7 +241,6 @@ export function convertAllProdcutsPathType(productsJson:any){
         for(let i = 0; i< productList.length; i++){
             const path = '/' +productList[i]._id + '/'
             productList[i].path = path
-            delete productList[i]._id
             productList[i] = {node: productList[i]}
         }
     }

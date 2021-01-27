@@ -124,7 +124,6 @@ async function getProduct({
                 }
                 related__cc_product_spec__c {
                   __typename
-                  name
                   displayName:spec_value__c
                   spec__c {
                     _id
@@ -154,7 +153,7 @@ async function getProduct({
     query{
       node:cc_price_list_items__c(filters: "product__c eq '${productId}'") {
         _id
-        price_value__c
+        value:price_value__c
       }
     }
   `
